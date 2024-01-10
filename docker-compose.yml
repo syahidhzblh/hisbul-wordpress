@@ -1,0 +1,50 @@
+version: "3"
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: php:8.1-fpm-alpine
+    container_name: app
+    environment:
+      - SERVICE_NAME=app
+    volumes:
+      - ./:/var/www
+    networks:
+      - internal
+  db:
+    image: mysql
+    container_name: db-wordpress
+    networks:
+      - internal
+    ports:
+      - 3306:3306
+    volumes:
+      - dbdata:/var/lib/mysql/
+    environment:
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - SERVICE_NAME=mysql
+  webserver:
+    depends_on:
+      - db
+    image: nginx:alpine
+    container_name: webserver
+    volumes:
+      - ./:/var/www
+      - ./nginx/conf.d:/etc/nginx/conf.d
+    networks:
+      - internal
+    ports:
+      - 80:80
+
+#Docker Networks
+networks:
+  internal:
+    driver: bridge
+#Volumes
+volumes:
+  dbdata:
+    driver: local
