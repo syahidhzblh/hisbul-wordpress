@@ -11,6 +11,6 @@ Make sure replace value environment on .env with your own value
 
 1. Extract Wordpress Package to this folder
 2. Run Docker Compose Up
-   '''bash
+```bash
    docker compose up -d
-   '''
+```
